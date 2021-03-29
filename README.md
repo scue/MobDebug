@@ -43,6 +43,14 @@ extends it in several ways:
 require("mobdebug").start()
 ```
 
+Docker:
+```lua
+local mobdebug = require('mobdebug');
+mobdebug.rbasedir("/usr/local/openresty/nginx/lua/") -- set remote directory
+mobdebug.lbasedir("/Users/scue/source/someproject/nginx/lua/") -- set local directory
+mobdebug.start("host.docker.internal", 18172);
+```
+
 ## Installation
 
 Make `src/mobdebug.lua` available to your script.

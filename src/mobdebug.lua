@@ -121,6 +121,8 @@ local buf
 local outputs = {}
 local iobase = {print = print}
 local basedir = ""
+local lbasedir = "" -- local base directory
+local rbasedir = "" -- remote base directory
 local deferror = "execution aborted at default debugee"
 local debugee = function ()
   local a = 1
@@ -278,6 +280,9 @@ mobdebug.linemap = nil
 mobdebug.loadstring = loadstring
 
 local function removebasedir(path, basedir)
+  if rbasedir ~= "" and lbasedir ~= "" then
+    return string.gsub(path, rbasedir, lbasedir)
+  end
   if iscasepreserving then
     -- check if the lowercased path matches the basedir
     -- if so, return substring of the original path (to not lowercase it)
@@ -647,6 +652,7 @@ local function debug_hook(event, line)
         -- set on foo.lua will not work if not converted to the same case.
         if iscasepreserving then file = string.lower(file) end
         if find(file, "^%./") then file = sub(file, 3)
+        elseif rbasedir ~= "" and lbasedir ~= "" then file = string.gsub(file, rbasedir, lbasedir)
         else file = gsub(file, "^"..q(basedir), "") end
         -- some file systems allow newlines in file names; remove these.
         file = gsub(file, "\n", ' ')
@@ -1703,5 +1709,7 @@ mobdebug.output = output
 mobdebug.onexit = os and os.exit or done
 mobdebug.onscratch = nil -- callback
 mobdebug.basedir = function(b) if b then basedir = b end return basedir end
+mobdebug.lbasedir = function(b) if b then lbasedir = b end return lbasedir end
+mobdebug.rbasedir = function(b) if b then rbasedir = b end return rbasedir end
 
 return mobdebug
